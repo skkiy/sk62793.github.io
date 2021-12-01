@@ -1,14 +1,14 @@
+import { getPosts } from "lib/notion";
 import Head from 'next/head'
 import { NextPage } from 'next'
 import { Layout, siteTitle } from 'components/layout'
 import utilStyles from 'styles/utils.module.css'
-import { getSortedPostsData } from 'lib/posts'
 import Link from 'next/link'
 import { Date } from 'components/date'
-import { PostDataModel } from 'model/post'
+import { Post } from 'model/post'
 
 interface Props {
-  allPostsData: PostDataModel[]
+  allPostsData: Post[]
 }
 
 const Home: NextPage<Props> = ({ allPostsData }) => {
@@ -30,7 +30,7 @@ const Home: NextPage<Props> = ({ allPostsData }) => {
               </Link>
               <br />
               <small className={utilStyles.lightText}>
-                <Date dateString={date} />
+                <Date dateString={date || ""} />
               </small>
             </li>
           ))}
@@ -43,7 +43,7 @@ const Home: NextPage<Props> = ({ allPostsData }) => {
 export default Home
 
 export async function getStaticProps() {
-  const allPostsData = getSortedPostsData()
+  const allPostsData = await getPosts()
   return {
     props: {
       allPostsData
