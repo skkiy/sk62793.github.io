@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/node": "^16.11.10",
     "@types/react": "^17.0.37",
+    "dotenv": "^10.0.0",
     "eslint": "<8.0.0",
     "eslint-config-next": "11.0.0",
     "serve": "^13.0.2",
