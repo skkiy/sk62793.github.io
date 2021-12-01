@@ -1,40 +1,43 @@
-import { Client } from "@notionhq/client/build/src";
+import { Client } from "@notionhq/client";
 import { Post } from "model/post";
 
+const notionSecret = process.env.NEXT_PUBLIC_NOTION_SECRET || ''
+const databaseId = process.env.NEXT_PUBLIC_NOTION_DATABASE_ID || ''
+
 const notion = new Client({
-  auth: process.env.NEXT_PUBLIC_NOTION_SECRET,
+  auth: notionSecret,
 });
 
-export const getPosts = async () => {
-  const data = await notion.databases.query({
-    database_id: process.env.NEXT_PUBLIC_NOTION_DATABASE_ID || '',
-    filter: {
-      or: [
-        {
-          property: 'published',
-          checkbox: {
-            equals: true,
+export const getPosts = async (): Promise<Post[]> => {
+    const data = await notion.databases.query({
+      database_id: databaseId,
+      filter: {
+        or: [
+          {
+            property: 'published',
+            checkbox: {
+              equals: true,
+            },
           },
-        },
-      ]
-    },
-    sorts: [
-      {
-        property: 'date',
-        direction: 'descending',
+        ]
       },
-    ],
-  });
+      sorts: [
+        {
+          property: 'date',
+          direction: 'descending',
+        },
+      ],
+    });
   return data.results.map(res => {
     const post = res.properties.post
     const date = res.properties.date
-    const postData = {
+    const postData: Post = {
       id: res.id,
       title: "",
       date: "",
     }
     if (post.type === "title") {
-      postData.title = post.title[0].plain_text
+      postData.title = post.title[0]?.plain_text || ""
     }
     if (date.type === "date") {
       postData.date = date.date?.start || ""

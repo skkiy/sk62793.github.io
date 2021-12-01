@@ -8,6 +8,8 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-18.04
+    environment:
+      name: github-pages
     steps:
       - uses: actions/checkout@v2
 
@@ -27,7 +29,10 @@ jobs:
       - name: install
         run: yarn install --frozen-lockfile
 
-      - name: export
+      - name: bulid export
+        env:
+          NEXT_PUBLIC_NOTION_SECRET: ${{ secrets.NEXT_PUBLIC_NOTION_SECRET }}
+          NEXT_PUBLIC_NOTION_DATABASE_ID: ${{ secrets.NEXT_PUBLIC_NOTION_DATABASE_ID }}
         run: yarn export
 
       - name: add nojekyll
