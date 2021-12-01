@@ -3,10 +3,11 @@ import path from 'path'
 import matter from 'gray-matter'
 import { remark } from 'remark'
 import html from 'remark-html'
+import {PostDataModel} from 'model/post'
 
-const postsDirectory = path.join(process.cwd(), 'posts')
+const postsDirectory = path.join(process.cwd(), 'src/posts')
 
-export function getSortedPostsData() {
+export const getSortedPostsData = (): PostDataModel[] => {
   // Get file names under /posts
   const fileNames = fs.readdirSync(postsDirectory)
   const allPostsData = fileNames.map(fileName => {
@@ -25,7 +26,7 @@ export function getSortedPostsData() {
       id,
       ...matterResult.data
     }
-  })
+  }) as PostDataModel[]
   // Sort posts by date
   return allPostsData.sort((a, b) => {
     if (a.date < b.date) {
@@ -36,7 +37,7 @@ export function getSortedPostsData() {
   })
 }
 
-export function getAllPostIds() {
+export const getAllPostIds = (): {params: {id: string}}[] => {
   const fileNames = fs.readdirSync(postsDirectory)
   return fileNames.map(fileName => {
     return {
@@ -47,7 +48,7 @@ export function getAllPostIds() {
   })
 }
 
-export async function getPostData(id) {
+export const getPostData = async (id: string): Promise<PostDataModel> => {
   const fullPath = path.join(postsDirectory, `${id}.md`)
   const fileContents = fs.readFileSync(fullPath, 'utf8')
 
@@ -65,5 +66,5 @@ export async function getPostData(id) {
     id,
     contentHtml,
     ...matterResult.data
-  }
+  } as PostDataModel
 }
