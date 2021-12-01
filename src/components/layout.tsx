@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from 'components/layout.module.css'
 import utilStyles from 'styles/utils.module.css'
 import Link from 'next/link'
@@ -32,8 +31,8 @@ export const Layout: React.FC<Props> = ({ children, home }) => {
       <header className={styles.header}>
         {home ? (
           <>
-            <Image
-              priority
+            <img
+              // priority
               src="/images/profile.png"
               className={utilStyles.borderCircle}
               height={144}
@@ -46,8 +45,8 @@ export const Layout: React.FC<Props> = ({ children, home }) => {
           <>
             <Link href="/">
               <a>
-                <Image
-                  priority
+                <img
+                  // priority
                   src="/images/profile.png"
                   className={utilStyles.borderCircle}
                   height={108}
