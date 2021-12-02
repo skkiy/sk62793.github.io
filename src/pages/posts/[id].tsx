@@ -55,11 +55,11 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
     return {
       params: {
         id: post.id
-      }
+      },
     }
   })
   return {
     paths,
-    fallback: false,
+    fallback: "blocking",
   }
 }

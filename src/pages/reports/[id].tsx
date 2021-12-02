@@ -49,7 +49,7 @@ export const getStaticProps: GetStaticProps<Props, Params> = async ({
   }
 }
 
-export const getStaticPaths: GetStaticPaths<Params> = async () => {
+export const getStaticPaths: GetStaticPaths = async () => {
   const reports = await getReports()
   const paths = reports.map(report => {
     return {
@@ -60,6 +60,6 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
   })
   return {
     paths,
-    fallback: false,
+    fallback: "blocking",
   }
 }
