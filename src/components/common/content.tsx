@@ -1,47 +1,50 @@
-import { Heading, Text } from "@chakra-ui/react";
-import { Content } from "model/post";
-import { Fragment } from "react";
+import { Box, Heading, Text, ListItem, UnorderedList } from "@chakra-ui/react";
+
+import { Content, Text as TextModel } from "model";
 import styles from "./content.module.css"
 
 
-export const AnnotatedText = ({ text }: { text: any }) => {
-  if (!text) {
-    return null;
-  }
-  return text.map((value: any, i: number) => {
-    const {
-      annotations: { bold, code, color, italic, strikethrough, underline },
-      text,
-    } = value;
-    return (
-      <span
-        className={[
-          bold ? styles.bold : "",
-          code ? styles.code : "",
-          italic ? styles.italic : "",
-          strikethrough ? styles.strikethrough : "",
-          underline ? styles.underline : "",
-        ].join(" ")}
-        style={color !== "default" ? { color } : {}}
-        key={i}
-      >
-        {text.link ?
-          <a href={text.link.url}>{text.content}</a>
-          :
-          <p dangerouslySetInnerHTML={{__html: text.content.replace(/\r?\n/g, '<br>')}}></p>}
-      </span>
-    );
-  });
-};
+export const AnnotatedText = ({ text }: { text: TextModel }) => (
+  <>
+    {text.map((value, i) => {
+      const {
+        annotations: { bold, code, color, italic, strikethrough, underline },
+        type
+      } = value;
+      return (
+        <span
+          className={[
+            bold ? styles.bold : "",
+            code ? styles.code : "",
+            italic ? styles.italic : "",
+            strikethrough ? styles.strikethrough : "",
+            underline ? styles.underline : "",
+          ].join(" ")}
+          style={color !== "default" ? { color } : {}}
+          key={i}
+        >
+          {type === "text" ?
+            value.text.link ?
+              <a href={value.text.link.url}>{value.text.content}</a>
+              :
+              <p dangerouslySetInnerHTML={{ __html: value.text.content.replace(/\r?\n/g, '<br>') }} />
+            : <></>}
+          {type === "mention" || type === "equation" &&
+          <p dangerouslySetInnerHTML={{ __html: value.plain_text.replace(/\r?\n/g, '<br>') }} />}
+        </span>
+      )
+    })}
+  </>
+)
 
 export const renderBlock = (block: Content) => {
   const { type, id } = block;
   switch (type) {
     case "paragraph":
       return (
-        <Text marginY={2}>
+        <Box marginY={2}>
           <AnnotatedText text={block[type].text} />
-        </Text>
+        </Box>
       );
     case "heading_1":
       return (
@@ -63,15 +66,19 @@ export const renderBlock = (block: Content) => {
       );
     case "bulleted_list_item":
       return (
-        <li>
-          <AnnotatedText text={block[type].text} />
-        </li>
+        <UnorderedList>
+          <ListItem>
+            <AnnotatedText text={block[type].text} />
+          </ListItem>
+        </UnorderedList>
       );
     case "numbered_list_item":
       return (
-        <li>
-          <AnnotatedText text={block[type].text} />
-        </li>
+        <UnorderedList>
+          <ListItem>
+            <AnnotatedText text={block[type].text} />
+          </ListItem>
+        </UnorderedList>
       );
     case "to_do":
       return (
