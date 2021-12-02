@@ -32,7 +32,8 @@ jobs:
       - name: bulid export
         env:
           NEXT_PUBLIC_NOTION_SECRET: ${{ secrets.NEXT_PUBLIC_NOTION_SECRET }}
-          NEXT_PUBLIC_NOTION_DATABASE_ID: ${{ secrets.NEXT_PUBLIC_NOTION_DATABASE_ID }}
+          NEXT_PUBLIC_NOTION_POST_DATABASE_ID: ${{ secrets.NEXT_PUBLIC_NOTION_POST_DATABASE_ID }}
+          NEXT_PUBLIC_NOTION_REPORT_DATABASE_ID: ${{ secrets.NEXT_PUBLIC_NOTION_REPORT_DATABASE_ID }}
         run: yarn export
 
       - name: add nojekyll
