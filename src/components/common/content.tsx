@@ -1,6 +1,6 @@
-import { Box, Heading, Text, ListItem, UnorderedList } from "@chakra-ui/react";
+import { Box, Heading, Text, ListItem, UnorderedList, Link, Img } from "@chakra-ui/react";
 
-import { Content, Text as TextModel } from "model";
+import { Content, Meta, Text as TextModel } from "model";
 import styles from "./content.module.css"
 
 
@@ -118,9 +118,27 @@ export const renderBlock = (block: Content) => {
       return <hr key={id} />;
     case "quote":
       return <blockquote key={id}>{block[type].text[0].plain_text}</blockquote>;
+    case "bookmark":
+      // @ts-ignore
+      const { meta } = block[type] as { meta: Meta }
+      return (
+        <Link href={block[type].url} target={"_blank"} marginY={2} display={"block"}>
+          <Box display={"flex"} h={24} border={"1px solid"} borderColor={"#ddd"} borderRadius={5}>
+            <Box flex={2} p={2}>
+              <Text fontSize={"medium"}>{meta.title ?? ""}</Text>
+              <Text fontSize={"small"}>{meta.description ?? ""}</Text>
+              <Text fontSize={"small"}>{block[type].url}</Text>
+            </Box>
+            <Box flex={1}>
+              <Img src={meta.image ?? ""} w={"100%"} h={"100%"} objectFit={"cover"} />
+            </Box>
+          </Box>
+        </Link>
+      )
     default:
-      return `❌ Unsupported block (${
-        type === "unsupported" ? "unsupported by Notion API" : type
-      })`;
+      break
+      // return `❌ Unsupported block (${
+      //   type === "unsupported" ? "unsupported by Notion API" : type
+      // })`;
   }
 };

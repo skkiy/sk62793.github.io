@@ -139,3 +139,10 @@ export interface Category {
   name: string
   color: "default" | "gray" | "brown" | "orange" | "yellow" | "green" | "blue" | "purple" | "pink" | "red"
 }
+
+export type Meta = {
+  url: string
+  title: string
+  description: string
+  image: string
+}

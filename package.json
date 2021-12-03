@@ -16,6 +16,7 @@
     "date-fns": "^2.11.1",
     "framer-motion": "^4",
     "gray-matter": "^4.0.2",
+    "jsdom": "^19.0.0",
     "next": "latest",
     "react": "17.0.2",
     "react-dom": "17.0.2",
@@ -24,6 +25,7 @@
     "remark-html": "^15.0.0"
   },
   "devDependencies": {
+    "@types/jsdom": "^16.2.13",
     "@types/node": "^16.11.10",
     "@types/react": "^17.0.37",
     "dotenv": "^10.0.0",

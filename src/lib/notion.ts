@@ -1,5 +1,5 @@
 import { Client } from "@notionhq/client";
-
+import { JSDOM } from "jsdom"
 import { Post, Report } from "model";
 
 const notionSecret = process.env.NEXT_PUBLIC_NOTION_SECRET || ''
@@ -11,25 +11,25 @@ const notion = new Client({
 });
 
 export const getPosts = async (): Promise<Post[]> => {
-    const data = await notion.databases.query({
-      database_id: postDatabaseId,
-      filter: {
-        or: [
-          {
-            property: 'published',
-            checkbox: {
-              equals: true,
-            },
-          },
-        ]
-      },
-      sorts: [
+  const data = await notion.databases.query({
+    database_id: postDatabaseId,
+    filter: {
+      or: [
         {
-          property: 'date',
-          direction: 'descending',
+          property: 'published',
+          checkbox: {
+            equals: true,
+          },
         },
-      ],
-    });
+      ]
+    },
+    sorts: [
+      {
+        property: 'date',
+        direction: 'descending',
+      },
+    ],
+  });
   return data.results.map(res => {
     const post = res.properties.post
     const date = res.properties.date
@@ -106,7 +106,7 @@ export const getReports = async (): Promise<Report[]> => {
       reportData.categories = category.multi_select
     }
 
-      const date = res.properties.date
+    const date = res.properties.date
     if (date.type === "date") {
       reportData.date = date.date?.start || ""
     }
@@ -135,6 +135,44 @@ export const getReportData = async (id: string): Promise<Report> => {
     report.categories = data.properties.category.multi_select
   }
   const content = await notion.blocks.children.list({ block_id: id });
-  report.contents = content.results
+  report.contents = await Promise.all(content.results.map(async (results) => {
+    const { type } = results
+    if (type === "bookmark") {
+      const url = results[type].url
+      const meta = await fetch(url)
+        .then(res => res.text())
+        .then(text => {
+          const metaData = {
+            url,
+            title: "",
+            description: "",
+            image: "",
+          }
+          const doms = new JSDOM(text)
+          const metas = doms.window.document.getElementsByTagName("meta")
+          for (let i = 0; i < metas.length; i++) {
+            const property = metas[i].getAttribute("property");
+            if (typeof property == "string") {
+              if (property.match("og:title")) metaData.title = metas[i].getAttribute("content") || "";
+              if (property.match("og:description")) metaData.description = metas[i].getAttribute("content") || "";
+              if (property.match("og:image")) metaData.image = metas[i].getAttribute("content") || "";
+            }
+          }
+          return metaData
+        })
+        .catch(error => {
+          console.error(error)
+          return {}
+        })
+      return {
+        ...results,
+        [type]: {
+          ...results[type],
+          meta,
+        }
+      }
+    }
+    return results
+  }))
   return report
 }
